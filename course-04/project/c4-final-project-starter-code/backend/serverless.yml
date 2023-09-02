@@ -41,10 +41,11 @@ provider:
       Resource: "*"
     - Effect: Allow
       Action:
-        - dynamodb:Scan
         - dynamodb:PutItem
         - dynamodb:GetItem
         - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:Query
       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
     - Effect: Allow
       Action:
@@ -125,13 +126,15 @@ functions:
               'application/json': UpdateTodoRequest
 
   # TODO: Configure this function
-  # Provide property for setting up CORS, Authorizer, iamRoleStatements
+  # Provide property for setting up iamRoleStatements
   DeleteTodo:
     handler: src/lambda/http/deleteTodo.handler
     events:
       - http:
           method: delete
           path: todos/{todoId}
+          cors: true
+          authorizer: Auth
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements
@@ -141,6 +144,8 @@ functions:
       - http:
           method: post
           path: todos/{todoId}/attachment
+          cors: true
+          authorizer: Auth
 
 resources:
   Resources:

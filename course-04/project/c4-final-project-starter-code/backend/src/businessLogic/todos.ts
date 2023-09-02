@@ -1,4 +1,4 @@
-import { TodosAccess } from './todosAcess'
+import { TodosAccess } from '../dataLayer/todosAcess'
 // import { AttachmentUtils } from './attachmentUtils';
 import { TodoItem } from '../models/TodoItem'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
@@ -10,8 +10,10 @@ import { parseUserId } from '../auth/utils'
 
 const todosAccess = new TodosAccess()
 
-export async function getTodosForUser(): Promise<TodoItem[]> {
-    return todosAccess.getTodosForUser()
+export async function getTodosForUser(jwtToken: string): Promise<TodoItem[]> {
+    const userId = parseUserId(jwtToken)
+
+    return todosAccess.getTodosForUser(userId)
 }
 
 export async function createTodo(
@@ -45,4 +47,32 @@ export async function updateTodo(
         todoId,
         userId
     )
+}
+
+export async function deleteTodo(
+    todoId: string,
+    jwtToken: string
+  ) {
+  
+    const userId = parseUserId(jwtToken)
+  
+    return await todosAccess.deleteTodo(
+        todoId,
+        userId
+    )
+}
+
+export async function updateTodoUrl(
+    todoId: string,
+    jwtToken: string,
+    attachmentUrl: string
+  ) {
+  
+    const userId = parseUserId(jwtToken)
+  
+    return await todosAccess.updateTodoUrl({
+        todoId: todoId,
+        userId: userId,
+        attachmentUrl: attachmentUrl
+    })
 }
